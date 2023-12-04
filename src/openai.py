@@ -1,8 +1,19 @@
 from openai import OpenAI
 
+TRANSCRIPTION_MODEL = "whisper-1"
 COMPLETIONS_MODEL = "gpt-3.5-turbo-1106"
 
 client = OpenAI()
+
+
+def trnascribe_call(audio_file) -> str:
+    transcript = client.audio.transcriptions.create(
+        model = TRANSCRIPTION_MODEL,
+        file = audio_file
+    )
+    
+    return transcript
+
 
 def call_chat_completions(input_text: str) -> str:
     """_summary_
