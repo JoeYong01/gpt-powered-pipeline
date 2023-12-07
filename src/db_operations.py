@@ -17,3 +17,5 @@ def execute_query(query: str) -> None:
                 cur.execute(query)
     except psycopg2.errors as e:
         print(f"a psycopg2 error occured: {e}")
+    except Exception as e:
+        print(f"an error occured: {e}")
