@@ -1,4 +1,5 @@
 def transcribe_audio(client: str, model: str, audio_file) -> str:
+    """transcribes audio/speech to text using whisper"""
     with open(audio_file, "rb") as file:
         transcript = client.audio.transcriptions.create(
             model = model,
