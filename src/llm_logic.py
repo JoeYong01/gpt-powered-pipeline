@@ -13,19 +13,19 @@ def transcribe_audio(
     return transcript
 
 def call_completions(
-    client: str,
+    client,
     model: str,
-    prompt:str,
+    prompt: str,
     temperature: int,
     input_text: str
 ) -> bool:
-    """evaluates whether or not the customer issue has been resolved"""
+    """Evaluates whether or not the customer issue has been resolved"""
     response = client.chat.completions.create(
-    model=model,
-    messages=[
-        {"role": "system", "content": f"{prompt}"},
-        {"role": "user", "content": f"{input_text}"}
+        model=model,
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": input_text}
         ],
-    temperature=temperature
+        temperature=temperature
     )
-    return response['choices'][0]['message']['content']
+    return response.choices[0].message.content
