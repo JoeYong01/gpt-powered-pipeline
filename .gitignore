@@ -3,3 +3,4 @@ venv/Lib
 venv/Scripts
 **/__pycache__/
 .*
+*__init__.py
