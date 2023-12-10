@@ -12,9 +12,8 @@ def execute_query(query: str) -> None:
 
 QUERY = """
 CREATE TABLE call_logs(
-    id INTEGER PRIMARY KEY,
     respondant_id INTEGER DEFAULT NULL,
-    caller_id INTEGER DEFAULT NULL,
+    agent_id INTEGER DEFAULT NULL,
     is_resolved INTEGER DEFAULT NULL,
     feature_columns INTEGER DEFAULT NULL,
     call_logs TEXT DEFAULT NULL,
