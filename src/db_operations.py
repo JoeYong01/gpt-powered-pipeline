@@ -1,21 +1,15 @@
-import psycopg2
-
-
-PG_DB_PARAMS = {
-    "host": "",
-    "user": "",
-    "password": "",
-    "database": ""
-}
+import sqlite3
 
 
 def execute_query(query: str) -> None:
-    """Takes a query as an input & executes it against a postgres database"""
-    try:
-        with psycopg2.connect(**PG_DB_PARAMS) as conn:
-            with conn.cursor() as cur:
-                cur.execute(query)
-    except psycopg2.errors as e:
-        print(f"a psycopg2 error occured: {e}")
-    except Exception as e:
-        print(f"an error occured: {e}")
+    """executes a sqllite query"""
+    con = sqlite3.connect("db/gpt-powered-pipeline.db")
+    cur = con.cursor()
+    cur.execute(query)
+    if query.strip().upper().startswith("SELECT"):
+        result = cur.fetchall()
+        return result
+    else:
+        con.commit()
+    cur.close()
+    con.close()
