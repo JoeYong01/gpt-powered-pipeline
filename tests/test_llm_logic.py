@@ -15,6 +15,6 @@ def test_transcribe_audio() -> None:
     transcription = transcribe_audio(
         client,
         TRANSCRIPTION_MODEL,
-        "src/tests/audio_test/How to Pronounce Hello.mp4"
+        "tests/audio_test/How to Pronounce Hello.mp4"
     )
     assert transcription is not None
