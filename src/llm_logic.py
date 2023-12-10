@@ -1,8 +1,9 @@
 def transcribe_audio(client: str, model: str, audio_file) -> str:
-    transcript = client.audio.transcriptions.create(
-        model = model,
-        file = open(audio_file, "rb")
-    )
+    with open(audio_file, "rb") as file:
+        transcript = client.audio.transcriptions.create(
+            model = model,
+            file = file
+        )
     
     return transcript
 
