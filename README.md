@@ -24,6 +24,8 @@ This Python project seeks to automate the transcription & analysis of audio call
 3. Assuming a source system exists, the audio files can be uploaded into `/call_logs`.
 4. Run the main script:
    - `python main.py`
+5. Query the database:
+   - `python scripts/query_db.py`
 
 # Todo
 - Processed files should be deleted/archived (& compressed)
