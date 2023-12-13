@@ -7,6 +7,7 @@ from src.llm_logic import (
 	transcribe_audio,
 	call_completions,
 )
+from src.file_ops import archive_file
 
 
 load_dotenv()
@@ -22,14 +23,18 @@ UPSET_CUSTOMER_PROMPT=os.environ.get("UPSET_CUSTOMER_PROMPT")
 OFFERING_PROMPT=os.environ.get("OFFERING_PROMPT")
 
 # others
-CALL_LOGS = "call_logs/Customer Service Sample Call - Product Refund.mp4"
+CALL_LOGS_DIR = "call_logs/"
+CALL_LOGS_FILE = "Customer Service Sample Call - Product Refund.mp4"
+CALL_LOGS_FILEPATH = f"{CALL_LOGS_DIR}/{CALL_LOGS_FILE}"
+ARCHIVE_DIR = "call_logs_archive/"
+ARCHIVE_FILEPATH = f"{ARCHIVE_DIR}/{CALL_LOGS_FILE}"
 
 
 def main():
     transcription = transcribe_audio(
 		client,
   		TRANSCRIPTION_MODEL,
-		CALL_LOGS
+		CALL_LOGS_FILEPATH
 	)
     is_resolved = call_completions(
         client,
@@ -61,6 +66,7 @@ def main():
 		call_logs = transcription,
 		timestamp = time_processed
 	)
+    archive_file(CALL_LOGS_DIR, CALL_LOGS_FILE, ARCHIVE_DIR)
     
 
 if __name__ == "__main__":
