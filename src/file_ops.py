@@ -54,7 +54,7 @@ def archive_file(
         destination_path (str): target directory of archived file
     """
     source_filepath = source_path + source_file
-    destination_filepath = destination_path + "compressed-", source_file
+    destination_filepath = destination_path + "compressed-" + source_file
     compressed_file = compress_file(source_filepath)
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
