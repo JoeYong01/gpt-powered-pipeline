@@ -1,58 +1,85 @@
+"""contains functions responsible for file operations"""
 import os
-import shutil
 import zlib
-from typing import IO
-
-def move_file(
-    source_file_path: str,
-    destination_path: str
-) -> None:
-    """
-    Moves a file to a directory (creates if not exists) using shutil
-
-    Args:
-        source_file_path (str): path of the source file
-        destination_path (str): target directory to move to
-    """
-    if not os.path.exists(destination_path):
-        os.makedirs(destination_path)
-    
-    shutil.move(source_file_path, destination_path)
-
 
 def compress_file(
     source_file_path: str,
-    compression_level: int = 5,
-    window_size: int = 12
-) -> IO:
+    compression_level: int = 5
+) -> bytes:
     """
     Takes in a file & compresses it
 
     Args:
-        source_file_path (str): path of the source file
-        compression_level (int, optional): (0 - 9). Defaults to 5.
-        window_size (int, optional): higher = better compression & higher memory usage (9 - 15). Defaults to 12.
+        source_file_path (str): source filepath 
+        compression_level (int, optional): (0 - 9). Defaults to 5
 
     Returns:
-        IO: returns a file object
+        IO: returns a compressed file
     """
-    ...
+    with open(source_file_path, 'rb') as source_file:
+        file_data = source_file.read()
+        compressed_data = zlib.compress(file_data, compression_level)
+        return compressed_data
+
+
+def decompress_file(
+    source_path: str,
+    source_file: str
+) -> None:
+    """
+    decompresses a file
+
+    Args:
+        source_path (str): _description_
+        source_file (str): _description_
+        destination_path (str): _description_
+    """
+    with open(source_path + source_file, "rb") as file:
+        compressed_data = file.read()
+        decompressed_data = zlib.decompress(compressed_data)
+        return decompressed_data
+
 
 def archive_file(
-    source_file_path: str,
-    destination_file_path: str
+    source_path: str,
+    source_file: str,
+    destination_path: str
 ) -> None:
     """
     archives a file to a destination
 
     Args:
-        source_file_path (str): path of the source file
-        destination_file_path (str): destination of the file
+        source_path (str): path of the source directory
+        source_file_path (str): file to be compressed
+        destination_path (str): target directory of archived file
     """
-    ...
+    source_filepath = source_path + source_file
+    destination_filepath = destination_path + "compressed-", source_file
+    compressed_file = compress_file(source_filepath)
+    if not os.path.exists(destination_path):
+        os.makedirs(destination_path)
+    with open(destination_filepath, "wb") as file:
+        file.write(compressed_file)
+        os.remove(source_filepath)
 
 
-archive_path = "call_logs_archive/"
-os.makedirs(archive_path) if not os.path.exists(archive_path) else print('path exists')
-shutil.copy("call_logs/Call Center Sample Calls E-Commerce Store.mp4", f"{archive_path}")
-compress_file(f"{archive_path}Call Center Sample Calls E-Commerce Store.mp4")
+def unarchive_file(
+    source_path: str,
+    source_file: str,
+    destination_path: str
+) -> None:
+    """_summary_
+
+    Args:
+        source_path (str): path of the source directory
+        source_file_path (str): file to be decompressed
+        destination_path (str): target directory to write the file to
+    """
+    source_file_path = source_path + source_file
+    destination_filepath = destination_path + source_file.replace("compressed-", "")
+    decompressed_file = decompress_file(source_path, source_file)
+    if not os.path.exists(destination_path):
+        os.makedirs(destination_path)
+    with open(destination_filepath, "wb") as file:
+        file.write(decompressed_file)
+        os.remove(source_file_path)
