@@ -1,6 +1,7 @@
 """contains functions responsible for file operations"""
 import os
 import zlib
+from azure.storage.blob import BlobServiceClient
 
 def compress_file(
     source_file_path: str,
@@ -38,6 +39,30 @@ def decompress_file(
         compressed_data = file.read()
         decompressed_data = zlib.decompress(compressed_data)
         return decompressed_data
+
+
+def upload_to_blob_storage(
+    container_name: str,
+    connection_string: str,
+    source_path: str,
+    source_file: str
+) -> None:
+    """
+    uploads a file to Azure Blob Storage
+
+    Args:
+        container_name (str): Name of container to upload to
+        connection_string (str): Azure Storage Account connection string
+        source_path: (str): path to the file to be uploaded
+        source_file (str): file to be uploaded
+    """
+    filepath = os.path.join(source_path, source_file)
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    # source_file in this case would be the blob_name
+    blob_client = blob_service_client.get_blob_client(container_name, source_file)
+    # we upload file from filepath as source_file (which is blob_name)
+    with open(filepath, "rb") as f:
+        blob_client.upload_blob(f)
 
 
 def archive_file(
