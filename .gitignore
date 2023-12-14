@@ -4,5 +4,5 @@ venv/Scripts
 **/__pycache__/
 .*
 *__init__.py
-call_logs_archive/
-db/
+call_logs_archive/*
+db/gpt-powered-pipeline.db
