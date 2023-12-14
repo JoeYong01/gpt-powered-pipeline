@@ -31,9 +31,8 @@ def decompress_file(
     decompresses a file
 
     Args:
-        source_path (str): _description_
-        source_file (str): _description_
-        destination_path (str): _description_
+        source_path (str): source directory
+        source_file (str): source file
     """
     with open(source_path + source_file, "rb") as file:
         compressed_data = file.read()
