@@ -79,7 +79,8 @@ def archive_file(
         destination_path (str): target directory of archived file
     """
     source_filepath = source_path + source_file
-    destination_filepath = destination_path + "compressed-" + source_file
+    destination_filename = "compressed-" + source_file
+    destination_filepath = os.path.join(destination_path, destination_filename)
     compressed_file = compress_file(source_filepath)
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
@@ -101,7 +102,8 @@ def unarchive_file(
         destination_path (str): target directory to write the file to
     """
     source_file_path = source_path + source_file
-    destination_filepath = destination_path + source_file.replace("compressed-", "")
+    destination_filename = source_file.replace("compressed-", "")
+    destination_filepath = os.path.join(destination_path, destination_filename)
     decompressed_file = decompress_file(source_path, source_file)
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
