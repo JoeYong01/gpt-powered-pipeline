@@ -61,6 +61,7 @@ def upload_to_blob_storage(
     # we upload file from filepath as blob_name
     with open(file_path, "rb") as f:
         blob_client.upload_blob(f)
+        os.remove(file_path)
 
 
 def archive_file(
