@@ -5,7 +5,7 @@ from azure.storage.blob import BlobServiceClient
 from datetime import datetime
 
 def compress_file(
-    source_file_path: str,
+    file_path: str,
     compression_level: int = 5
 ) -> bytes:
     """
@@ -18,24 +18,22 @@ def compress_file(
     Returns:
         IO: returns a compressed file
     """
-    with open(source_file_path, 'rb') as source_file:
+    with open(file_path, 'rb') as source_file:
         file_data = source_file.read()
         compressed_data = zlib.compress(file_data, compression_level)
         return compressed_data
 
 
 def decompress_file(
-    source_path: str,
-    source_file: str
+    file_path: str
 ) -> None:
     """
     decompresses a file
 
     Args:
-        source_path (str): source directory
-        source_file (str): source file
+        file_path (str): full path to the file
     """
-    with open(source_path + source_file, "rb") as file:
+    with open(file_path, "rb") as file:
         compressed_data = file.read()
         decompressed_data = zlib.decompress(compressed_data)
         return decompressed_data
@@ -44,8 +42,7 @@ def decompress_file(
 def upload_to_blob_storage(
     container_name: str,
     connection_string: str,
-    source_path: str,
-    source_file: str
+    file_path: str
 ) -> None:
     """
     uploads a file to Azure Blob Storage
@@ -53,62 +50,57 @@ def upload_to_blob_storage(
     Args:
         container_name (str): Name of container to upload to
         connection_string (str): Azure Storage Account connection string
-        source_path: (str): path to the file to be uploaded
-        source_file (str): file to be uploaded
+        file_path (str): full path to the file
     """
+    filename = os.path.basename(file_path)
     blob_dir = datetime.now().strftime("%Y/%b/%d")
     # blobs are case & space sensitive!
-    blob_name = os.path.join(blob_dir, source_file).lower().strip().replace("  ", " ")
-    filepath = os.path.join(source_path, source_file)
+    blob_name = os.path.join(blob_dir, filename).lower().strip().replace("  ", " ")
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     blob_client = blob_service_client.get_blob_client(container_name, blob_name)
     # we upload file from filepath as blob_name
-    with open(filepath, "rb") as f:
+    with open(file_path, "rb") as f:
         blob_client.upload_blob(f)
 
 
 def archive_file(
-    source_path: str,
-    source_file: str,
+    file_path: str,
     destination_path: str
 ) -> None:
     """
     archives a file to a destination
 
     Args:
-        source_path (str): path of the source directory
-        source_file_path (str): file to be compressed
+        file_path (str): full path to the file
         destination_path (str): target directory of archived file
     """
-    source_filepath = source_path + source_file
-    destination_filename = "compressed-" + source_file
-    destination_filepath = os.path.join(destination_path, destination_filename)
-    compressed_file = compress_file(source_filepath)
+    filename = os.path.basename(file_path)
+    compressed_filename = "compressed-" + filename
+    destination_filepath = os.path.join(destination_path, compressed_filename)
+    compressed_file = compress_file(file_path)
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
     with open(destination_filepath, "wb") as file:
         file.write(compressed_file)
-        os.remove(source_filepath)
+        os.remove(file_path)
 
 
 def unarchive_file(
-    source_path: str,
-    source_file: str,
+    file_path: str,
     destination_path: str
 ) -> None:
     """_summary_
 
     Args:
-        source_path (str): path of the source directory
-        source_file_path (str): file to be decompressed
+        file_path (str): full path to the file
         destination_path (str): target directory to write the file to
     """
-    source_file_path = source_path + source_file
-    destination_filename = source_file.replace("compressed-", "")
-    destination_filepath = os.path.join(destination_path, destination_filename)
-    decompressed_file = decompress_file(source_path, source_file)
+    filename = os.path.basename(file_path)
+    decompressed_filename = filename.replace("compressed-", "")
+    destination_filepath = os.path.join(destination_path, decompressed_filename)
+    decompressed_file = decompress_file(file_path)
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
     with open(destination_filepath, "wb") as file:
         file.write(decompressed_file)
-        os.remove(source_file_path)
+        os.remove(file_path)
