@@ -42,7 +42,8 @@ def decompress_file(
 def upload_to_blob_storage(
     container_name: str,
     connection_string: str,
-    file_path: str
+    file_path: str,
+    is_test: bool = False
 ) -> None:
     """
     uploads a file to Azure Blob Storage
@@ -58,9 +59,13 @@ def upload_to_blob_storage(
     blob_name = os.path.join(blob_dir, filename).lower().strip().replace("  ", " ")
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     blob_client = blob_service_client.get_blob_client(container_name, blob_name)
-    # we upload file from filepath as blob_name
     with open(file_path, "rb") as f:
         blob_client.upload_blob(f)
+    # if its a test, just delete the blob & return True to indicate that its working
+    if is_test:
+        blob_client.delete_blob()
+        return True
+    else:
         os.remove(file_path)
 
 
