@@ -2,6 +2,7 @@
 import os
 import zlib
 from azure.storage.blob import BlobServiceClient
+from datetime import datetime
 
 def compress_file(
     source_file_path: str,
@@ -55,11 +56,13 @@ def upload_to_blob_storage(
         source_path: (str): path to the file to be uploaded
         source_file (str): file to be uploaded
     """
+    blob_dir = datetime.now().strftime("%Y/%b/%d")
+    # blobs are case & space sensitive!
+    blob_name = os.path.join(blob_dir, source_file).lower().strip().replace("  ", " ")
     filepath = os.path.join(source_path, source_file)
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-    # source_file in this case would be the blob_name
-    blob_client = blob_service_client.get_blob_client(container_name, source_file)
-    # we upload file from filepath as source_file (which is blob_name)
+    blob_client = blob_service_client.get_blob_client(container_name, blob_name)
+    # we upload file from filepath as blob_name
     with open(filepath, "rb") as f:
         blob_client.upload_blob(f)
 
