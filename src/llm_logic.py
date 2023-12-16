@@ -19,7 +19,7 @@ def call_completions(
     temperature: int,
     input_text: str
 ) -> bool:
-    """Evaluates whether or not the customer issue has been resolved"""
+    """Evaluates whether the prompt against the input text & returns a boolean value"""
     response = client.chat.completions.create(
         model=model,
         messages=[
