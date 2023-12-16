@@ -52,6 +52,7 @@ def upload_to_blob_storage(
         container_name (str): Name of container to upload to
         connection_string (str): Azure Storage Account connection string
         file_path (str): full path to the file
+        is_test (bool, optional): Used to pytest testing. Defaults to False
     """
     filename = os.path.basename(file_path)
     blob_dir = datetime.now().strftime("%Y/%b/%d")
@@ -80,6 +81,7 @@ def archive_file(
     Args:
         file_path (str): full path to the file
         destination_path (str): target directory of archived file
+        is_test (bool, optional): Used to pytest testing. Defaults to False
     """
     filename = os.path.basename(file_path)
     compressed_filename = "compressed-" + filename
@@ -108,6 +110,7 @@ def unarchive_file(
     Args:
         file_path (str): full path to the file
         destination_path (str): target directory to write the file to
+        is_test (bool, optional): Used to pytest testing. Defaults to False
     """
     filename = os.path.basename(file_path)
     decompressed_filename = filename.replace("compressed-", "")
