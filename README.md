@@ -28,6 +28,7 @@ This Python project seeks to automate the transcription & analysis of audio call
    - `python scripts/query_db.py`
 
 # Todo
+- add tests for main functions
 - Implement Logging
 - Productionize the script:
   - proper error handling:
