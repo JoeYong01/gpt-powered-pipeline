@@ -71,7 +71,8 @@ def upload_to_blob_storage(
 
 def archive_file(
     file_path: str,
-    destination_path: str
+    destination_path: str,
+    is_test: bool = False
 ) -> None:
     """
     archives a file to a destination
@@ -88,12 +89,19 @@ def archive_file(
         os.makedirs(destination_path)
     with open(destination_filepath, "wb") as file:
         file.write(compressed_file)
+    # if its a test then just rm the created dir/files & return True to indicate its working
+    if is_test:
+        os.remove(destination_filepath)
+        os.removedirs(destination_path)
+        return True
+    else:
         os.remove(file_path)
 
 
 def unarchive_file(
     file_path: str,
-    destination_path: str
+    destination_path: str,
+    is_test: bool = False
 ) -> None:
     """_summary_
 
@@ -109,4 +117,9 @@ def unarchive_file(
         os.makedirs(destination_path)
     with open(destination_filepath, "wb") as file:
         file.write(decompressed_file)
+    if is_test:
+        os.remove(destination_filepath)
+        os.removedirs(destination_path)
+        return True
+    else:
         os.remove(file_path)
