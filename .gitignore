@@ -7,3 +7,4 @@ venv/Scripts
 call_logs_archive/*
 db/gpt-powered-pipeline.db
 test.py
+logs/*
