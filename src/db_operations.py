@@ -5,7 +5,7 @@ import sqlite3
 def execute_query(query: str) -> None:
     """executes a sqllite query"""
     try:
-        logging.info("running execute_query.")
+        logging.info("running function: execute_query.")
         con = sqlite3.connect("db/gpt-powered-pipeline.db")
         cur = con.cursor()
         cur.execute(query)
