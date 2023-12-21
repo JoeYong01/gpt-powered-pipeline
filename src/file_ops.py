@@ -6,6 +6,8 @@ from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import AzureError
 from datetime import datetime
 
+logger = logging.getLogger("file_ops.py")
+
 def compress_file(
     file_path: str,
     compression_level: int = 5

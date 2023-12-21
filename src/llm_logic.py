@@ -2,6 +2,8 @@
 import logging
 import openai
 
+logger = logging.getLogger("llm_logic.py")
+
 def transcribe_audio(
     client: str,
     model: str,
