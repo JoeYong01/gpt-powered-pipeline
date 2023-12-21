@@ -16,7 +16,6 @@ from src.file_ops import (
 
 load_dotenv()
 
-logging.info("initializing variables.")
 
 # OpenAI constants
 TRANSCRIPTION_MODEL = "whisper-1"
@@ -64,7 +63,7 @@ def main():
     Results are then inserted into a sqlite database & processed files are
     archived/uploaded to blob storage
     """
-    logging.info("running main().")
+    logger.info("running main().")
     transcription = transcribe_audio(
 		client,
   		TRANSCRIPTION_MODEL,
@@ -102,7 +101,7 @@ def main():
 	)
     archive_file(CALL_LOGS_FILEPATH, ARCHIVE_DIR)
     # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
-    logging.debug("finished running main().")
+    logger.debug("finished running main().")
 
 if __name__ == "__main__":
     main()
