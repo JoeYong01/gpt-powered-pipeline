@@ -22,19 +22,19 @@ def compress_file(
     Returns:
         IO: returns a compressed file
     """
-    logging.info("running function compress_file.")
+    logger.info("running function compress_file.")
     try:
         with open(file_path, 'rb') as source_file:
             file_data = source_file.read()
             compressed_data = zlib.compress(file_data, compression_level)
-            logging.debug("returning compressed data.")
+            logger.debug("returning compressed data.")
             return compressed_data
     except zlib.error as e:
-        logging.exception("zlib error exception in compress_file: %s", e)
+        logger.exception("zlib error exception in compress_file: %s", e)
     except Exception as e:
-        logging.exception("Exception in compress_file: %s", e)
+        logger.exception("Exception in compress_file: %s", e)
     finally:
-        logging.debug("context manager closed.")
+        logger.debug("context manager closed.")
     
 
 
@@ -47,19 +47,19 @@ def decompress_file(
     Args:
         file_path (str): full path to the file
     """
-    logging.info("running function: decompress file.")
+    logger.info("running function: decompress file.")
     try:
         with open(file_path, "rb") as file:
             compressed_data = file.read()
             decompressed_data = zlib.decompress(compressed_data)
-            logging.debug("returning decompressed data.")
+            logger.debug("returning decompressed data.")
             return decompressed_data
     except zlib.error as e:
-        logging.exception("zlib error exception in decompress_file: %s", e)
+        logger.exception("zlib error exception in decompress_file: %s", e)
     except Exception as e:
-        logging.exception("Exception in decompress_file: %s", e)
+        logger.exception("Exception in decompress_file: %s", e)
     finally:
-        logging.debug("context manager closed.")
+        logger.debug("context manager closed.")
 
 
 def upload_to_blob_storage(
@@ -77,7 +77,7 @@ def upload_to_blob_storage(
         file_path (str): full path to the file
         is_test (bool, optional): Used to pytest testing. Defaults to False
     """
-    logging.info("running function: upload_to_blob_storage")
+    logger.info("running function: upload_to_blob_storage")
     try:
         filename = os.path.basename(file_path)
         blob_dir = datetime.now().strftime("%Y/%b/%d")
@@ -87,19 +87,19 @@ def upload_to_blob_storage(
         blob_client = blob_service_client.get_blob_client(container_name, blob_name)
         with open(file_path, "rb") as f:
             blob_client.upload_blob(f)
-            logging.debug("context manager closed.")
+            logger.debug("context manager closed.")
         # if its a test, just delete the blob & return True to indicate that its working
         if is_test:
-            logging.debug("test detected, deleting uploaded Blob.")
+            logger.debug("test detected, deleting uploaded Blob.")
             blob_client.delete_blob()
             return True
         else:
-            logging.debug("removing local file after upload.")
+            logger.debug("removing local file after upload.")
             os.remove(file_path)
     except AzureError as e:
-        logging.exception("Azure error in upload_to_blob_storage: %s", e)
+        logger.exception("Azure error in upload_to_blob_storage: %s", e)
     except Exception as e:
-        logging.exception("Exception in upload_to_blob_storage: %s", e)
+        logger.exception("Exception in upload_to_blob_storage: %s", e)
 
 
 def archive_file(
@@ -115,7 +115,7 @@ def archive_file(
         destination_path (str): target directory of archived file
         is_test (bool, optional): Used to pytest testing. Defaults to False
     """
-    logging.info("running function: archive_file.")
+    logger.info("running function: archive_file.")
     try:
         filename = os.path.basename(file_path)
         compressed_filename = "compressed-" + filename
@@ -125,18 +125,18 @@ def archive_file(
             os.makedirs(destination_path)
         with open(destination_file_path, "wb") as file:
             file.write(compressed_file)
-            logging.debug("context manager closed.")
+            logger.debug("context manager closed.")
         # if its a test then just rm the created dir/files & return True to indicate its working
         if is_test:
-            logging.debug("test detected, destination file path.")
+            logger.debug("test detected, destination file path.")
             os.remove(destination_file_path)
             os.removedirs(destination_path)
             return True
         else:
-            logging.debug("removing source file.")
+            logger.debug("removing source file.")
             os.remove(file_path)
     except Exception as e:
-        logging.exception("Exception in archive_file: %e", e)
+        logger.exception("Exception in archive_file: %e", e)
 
 
 def unarchive_file(
@@ -151,7 +151,7 @@ def unarchive_file(
         destination_path (str): target directory to write the file to
         is_test (bool, optional): Used to pytest testing. Defaults to False
     """
-    logging.info("running function: unarchive_file.")
+    logger.info("running function: unarchive_file.")
     try:
         filename = os.path.basename(file_path)
         decompressed_filename = filename.replace("compressed-", "")
@@ -161,14 +161,14 @@ def unarchive_file(
             os.makedirs(destination_path)
         with open(destination_file_path, "wb") as file:
             file.write(decompressed_file)
-            logging.debug("context manager closed.")
+            logger.debug("context manager closed.")
         if is_test:
-            logging.debug("test detected, removing destination file path")
+            logger.debug("test detected, removing destination file path")
             os.remove(destination_file_path)
             os.removedirs(destination_path)
             return True
         else:
-            logging.debug("removing source file.")
+            logger.debug("removing source file.")
             os.remove(file_path)
     except Exception as e:
-        logging.exception("Exception in unarchive_file: %e", e)
+        logger.exception("Exception in unarchive_file: %e", e)

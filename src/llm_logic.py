@@ -20,21 +20,21 @@ def transcribe_audio(
     Returns:
         str: returns a transcription of an audio file
     """
-    logging.info("running function: transcribe_audio.")
+    logger.info("running function: transcribe_audio.")
     try:
         with open(audio_file, "rb") as file:
-            logging.debug("transcribing audio file.")
+            logger.debug("transcribing audio file.")
             transcript = client.audio.transcriptions.create(
                 model = model,
                 file = file,
                 response_format='text'
             )
-            logging.debug("returning transcript.")
+            logger.debug("returning transcript.")
             return transcript
     except openai.OpenAIError as e:
-        logging.exception("OpenAI Exception in transcribe_audio: %e", e)
+        logger.exception("OpenAI Exception in transcribe_audio: %e", e)
     except Exception as e:
-        logging.exception("Exception in transcribe_audio: %e", e)
+        logger.exception("Exception in transcribe_audio: %e", e)
 
 def call_completions(
     client,
@@ -56,9 +56,9 @@ def call_completions(
     Returns:
         bool: 1 / 0
     """
-    logging.info("running function: call_completions.")
+    logger.info("running function: call_completions.")
     try:
-        logging.debug("evaluating transcription.")
+        logger.debug("evaluating transcription.")
         response = client.chat.completions.create(
             model=model,
             messages=[
@@ -67,9 +67,9 @@ def call_completions(
             ],
             temperature=temperature
         )
-        logging.debug("returning boolean response.")
+        logger.debug("returning boolean response.")
         return response.choices[0].message.content
     except openai.OpenAIError as e:
-        logging.exception("OpenAI exception in call_completions: %s", e)
+        logger.exception("OpenAI exception in call_completions: %s", e)
     except Exception as e:
-        logging.exception("Exception in call_completions: %s", e)
+        logger.exception("Exception in call_completions: %s", e)
