@@ -1,4 +1,5 @@
 """main script"""
+import logging
 import os
 from datetime import datetime
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ from src.file_ops import (
 )
 
 load_dotenv()
+
 
 # OpenAI constants
 TRANSCRIPTION_MODEL = "whisper-1"
@@ -36,6 +38,23 @@ CALL_LOGS_FILEPATH = f"{CALL_LOGS_DIR}/{CALL_LOGS_FILE}"
 ARCHIVE_DIR = "call_logs_archive/"
 ARCHIVE_FILEPATH = f"{ARCHIVE_DIR}/{CALL_LOGS_FILE}"
 
+# logging variables
+LOG_DIR = "logs"
+DATE_NOW = datetime.now().strftime("%Y/%B/%d")
+TIME_NOW = datetime.now().strftime("%H%M%S")
+LOGGING_DIR = os.path.join(LOG_DIR, DATE_NOW)
+os.makedirs(LOGGING_DIR, exist_ok = True)
+
+# Initlaize logging
+logger = logging.getLogger("main.py")
+LOG_FILE_PATH = os.path.join(LOGGING_DIR, f"{TIME_NOW}_gpt_powered_pipeline.log")
+logging.basicConfig(
+    filename = LOG_FILE_PATH,
+    level = logging.INFO,
+    format = "%(asctime)s : %(name)s : %(levelname)s : %(message)s",
+    datefmt = "%Y-%m-%d %H:%M:%S",
+)
+
 
 def main():
     """
@@ -44,6 +63,7 @@ def main():
     Results are then inserted into a sqlite database & processed files are
     archived/uploaded to blob storage
     """
+    logger.info("running main().")
     transcription = transcribe_audio(
 		client,
   		TRANSCRIPTION_MODEL,
@@ -81,6 +101,7 @@ def main():
 	)
     archive_file(CALL_LOGS_FILEPATH, ARCHIVE_DIR)
     # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
+    logger.debug("finished running main().")
 
 if __name__ == "__main__":
     main()
