@@ -1,1 +1,10 @@
-2023-12-19 18:14:48 : INFO : test
+2023-12-21 18:01:49 : main.py : INFO : running main().
+2023-12-21 18:01:49 : llm_logic.py : INFO : running function: transcribe_audio.
+2023-12-21 18:01:58 : httpx : INFO : HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2023-12-21 18:01:58 : llm_logic.py : INFO : running function: call_completions.
+2023-12-21 18:01:59 : httpx : INFO : HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2023-12-21 18:01:59 : llm_logic.py : INFO : running function: call_completions.
+2023-12-21 18:02:00 : httpx : INFO : HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2023-12-21 18:02:00 : db_operations.py : INFO : running function: insert_into_database.
+2023-12-21 18:02:00 : file_ops.py : INFO : running function: archive_file.
+2023-12-21 18:02:00 : file_ops.py : INFO : running function compress_file.
