@@ -55,7 +55,7 @@ logging.basicConfig(
 )
 
 
-async def main(file):
+def main(file):
     """
     transcribes audio files to text, from that, a few features columns for analysis are parsed: 
     (is_resolved/gift_given/customer_upset).
@@ -63,12 +63,12 @@ async def main(file):
     archived/uploaded to blob storage
     """
     logger.info("running main().")
-    transcription = await transcribe_audio(
+    transcription = transcribe_audio(
         client,
         TRANSCRIPTION_MODEL,
         file
     )
-    is_resolved, is_gift_given = await asyncio.gather(
+    is_resolved, is_gift_given = asyncio.gather(
         call_completions(
             client,
             COMPLETIONS_MODEL,
@@ -84,7 +84,7 @@ async def main(file):
             transcription
         )
     )
-    await insert_into_database(
+    insert_into_database(
         respondant_id = 1,
         agent_id = 1,
         is_resolved = is_resolved,
@@ -92,7 +92,7 @@ async def main(file):
         call_logs = transcription,
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
-    await archive_file(file, ARCHIVE_DIR, is_test=True)
+    archive_file(file, ARCHIVE_DIR, is_test=True)
     # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
     logger.debug("finished running main().")
 
@@ -101,4 +101,3 @@ if __name__ == "__main__":
     with concurrent.futures.ThreadPoolExecutor(max_workers=None) as executor:
         futures = [executor.submit(main, file) for file in files]
         concurrent.futures.wait(futures)
-
