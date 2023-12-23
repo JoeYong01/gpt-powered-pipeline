@@ -1,17 +1,20 @@
 # LLM Call Log Transcription & classification
 This Python project seeks to automate the transcription & analysis of audio call logs on disputes between customer support agents & customers using OpenAI `Whisper` for transcription & `GPT-3.5` for text analysis.
 
-`GPT-3.5` here is used to evaluate whether the dispute has been resolved, a long with the identification of other features (for example in this case whether or not a discount/gift card was offered)
+`GPT-3.5` here is used to evaluate whether the dispute has been resolved, a long with the identification of other features (for example in this case whether or not a discount/gift card was offered (other functionality can be added as well)).
+
+After file processing, the file is compressed & archived locally & or compressed & archived onto Azure Blob Storage.
 
 ### Directory Structure
 ```
 /project_root
-|-- /call_logs       # Contains the call log audio files
-|-- /db              # Contains the SQLite database file
-|-- /logs            # Contains logging information
-|-- /scripts         # Python script to initialize the database
-|-- /src             # Source files for the project
-|-- /tests           # Contains the pytest tests
+|-- /call_logs            # Contains the call log audio files
+|-- /call_log_archive     # Contains the archived call log audio files
+|-- /db                   # Contains the SQLite database file (please delete before running)
+|-- /logs                 # Contains logging information
+|-- /scripts              # Python script to initialize the database
+|-- /src                  # Source files for the project
+|-- /tests                # Contains the pytest tests
 ```
 
 ### Usage
