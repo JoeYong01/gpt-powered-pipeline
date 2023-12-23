@@ -1,5 +1,6 @@
 """main script"""
 import asyncio
+import concurrent.futures
 import logging
 import os
 from datetime import datetime
@@ -54,7 +55,7 @@ logging.basicConfig(
 )
 
 
-async def main():
+def main(file):
     """
     transcribes audio files to text, from that, a few features columns for analysis are parsed: 
     (is_resolved/gift_given/customer_upset).
@@ -62,40 +63,41 @@ async def main():
     archived/uploaded to blob storage
     """
     logger.info("running main().")
-    for audio_files in os.listdir(CALL_LOGS_DIR):
-        audio_filepath = os.path.join(CALL_LOGS_DIR, audio_files)
-        transcription = await transcribe_audio(
+    transcription = transcribe_audio(
+        client,
+        TRANSCRIPTION_MODEL,
+        file
+    )
+    is_resolved, is_gift_given = asyncio.gather(
+        call_completions(
             client,
-            TRANSCRIPTION_MODEL,
-            audio_filepath
+            COMPLETIONS_MODEL,
+            IS_ISSUE_RESOLVED_PROMPT,
+            0,
+            transcription
+        ),
+        call_completions(
+            client,
+            COMPLETIONS_MODEL,
+            OFFERING_PROMPT,
+            0,
+            transcription
         )
-        is_resolved, is_gift_given = await asyncio.gather(
-            call_completions(
-                client,
-                COMPLETIONS_MODEL,
-                IS_ISSUE_RESOLVED_PROMPT,
-                0,
-                transcription
-            ),
-            call_completions(
-                client,
-                COMPLETIONS_MODEL,
-                OFFERING_PROMPT,
-                0,
-                transcription
-            )
-        )
-        await insert_into_database(
-            respondant_id = 1,
-            agent_id = 1,
-            is_resolved = is_resolved,
-            feature_columns = is_gift_given,
-            call_logs = transcription,
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        )
-        await archive_file(audio_filepath, ARCHIVE_DIR, is_test=True)
-        # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
-        logger.debug("finished running main().")
+    )
+    insert_into_database(
+        respondant_id = 1,
+        agent_id = 1,
+        is_resolved = is_resolved,
+        feature_columns = is_gift_given,
+        call_logs = transcription,
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    archive_file(file, ARCHIVE_DIR, is_test=True)
+    # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
+    logger.debug("finished running main().")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    files = [os.path.join(CALL_LOGS_DIR, audio_file) for audio_file in os.listdir(CALL_LOGS_DIR)]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=None) as executor:
+        futures = [executor.submit(main, file) for file in files]
+        concurrent.futures.wait(futures)
