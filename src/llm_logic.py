@@ -4,7 +4,7 @@ import openai
 
 logger = logging.getLogger("llm_logic.py")
 
-def transcribe_audio(
+async def transcribe_audio(
     client: str,
     model: str,
     audio_file
@@ -36,7 +36,7 @@ def transcribe_audio(
     except Exception as e:
         logger.exception("Exception in transcribe_audio: %e", e)
 
-def call_completions(
+async def call_completions(
     client,
     model: str,
     prompt: str,
