@@ -8,7 +8,7 @@ from datetime import datetime
 
 logger = logging.getLogger("file_ops.py")
 
-async def compress_file(
+def compress_file(
     file_path: str,
     compression_level: int = 5
 ) -> bytes:
@@ -38,7 +38,7 @@ async def compress_file(
     
 
 
-async def decompress_file(
+def decompress_file(
     file_path: str
 ) -> None:
     """
@@ -62,7 +62,7 @@ async def decompress_file(
         logger.debug("context manager closed.")
 
 
-async def upload_to_blob_storage(
+def upload_to_blob_storage(
     container_name: str,
     connection_string: str,
     file_path: str,
@@ -102,7 +102,7 @@ async def upload_to_blob_storage(
         logger.exception("Exception in upload_to_blob_storage: %s", e)
 
 
-async def archive_file(
+def archive_file(
     file_path: str,
     destination_path: str,
     is_test: bool = False
@@ -120,7 +120,7 @@ async def archive_file(
         filename = os.path.basename(file_path)
         compressed_filename = "compressed-" + filename
         destination_file_path = os.path.join(destination_path, compressed_filename)
-        compressed_file = await compress_file(file_path)
+        compressed_file = compress_file(file_path)
         if not os.path.exists(destination_path):
             os.makedirs(destination_path)
         with open(destination_file_path, "wb") as file:
@@ -138,7 +138,7 @@ async def archive_file(
         logger.exception("Exception in archive_file: %e", e)
 
 
-async def unarchive_file(
+def unarchive_file(
     file_path: str,
     destination_path: str,
     is_test: bool = False
@@ -155,7 +155,7 @@ async def unarchive_file(
         filename = os.path.basename(file_path)
         decompressed_filename = filename.replace("compressed-", "")
         destination_file_path = os.path.join(destination_path, decompressed_filename)
-        decompressed_file = await decompress_file(file_path)
+        decompressed_file = decompress_file(file_path)
         if not os.path.exists(destination_path):
             os.makedirs(destination_path)
         with open(destination_file_path, "wb") as file:

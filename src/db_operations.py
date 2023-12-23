@@ -4,7 +4,7 @@ import sqlite3
 
 logger = logging.getLogger("db_operations.py")
 
-async def execute_query(query: str) -> None:
+def execute_query(query: str) -> None:
     """executes a sqllite query"""
     try:
         logger.info("running function: execute_query.")
@@ -28,7 +28,7 @@ async def execute_query(query: str) -> None:
         logger.debug("connection is closed.")
 
 
-async def insert_into_database(
+def insert_into_database(
     respondant_id,
     agent_id,
     is_resolved,
