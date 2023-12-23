@@ -27,14 +27,16 @@ This Python project seeks to automate the transcription & analysis of audio call
 5. Query the database:
    - `python scripts/query_db.py`
 
+# Notes
+As Threading is superior in performance compared to asyncio in this use-case, the main branch will focus development on threading
+
 # Todo
 - Productionize the script:
     - calculate processed token count against limit
-  - Speed up processing:
-    - Implement Threading
-    - Implement asyncio
 
 # Done
 - Processed files should be deleted/archived (& compressed)
 - add tests for main functions
 - Implement Logging
+- Implement Threading
+- Implement asyncio
