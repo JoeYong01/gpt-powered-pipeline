@@ -29,11 +29,10 @@ This Python project seeks to automate the transcription & analysis of audio call
 
 # Todo
 - Productionize the script:
-  - proper error handling:
     - calculate processed token count against limit
-    - handle openai.error exceptions
   - Speed up processing:
     - Implement Threading
+    - Implement asyncio
 
 # Done
 - Processed files should be deleted/archived (& compressed)
