@@ -8,7 +8,7 @@ from datetime import datetime
 
 logger = logging.getLogger("file_ops.py")
 
-def compress_file(
+async def compress_file(
     file_path: str,
     compression_level: int = 5
 ) -> bytes:
@@ -38,7 +38,7 @@ def compress_file(
     
 
 
-def decompress_file(
+async def decompress_file(
     file_path: str
 ) -> None:
     """
@@ -62,7 +62,7 @@ def decompress_file(
         logger.debug("context manager closed.")
 
 
-def upload_to_blob_storage(
+async def upload_to_blob_storage(
     container_name: str,
     connection_string: str,
     file_path: str,
@@ -102,7 +102,7 @@ def upload_to_blob_storage(
         logger.exception("Exception in upload_to_blob_storage: %s", e)
 
 
-def archive_file(
+async def archive_file(
     file_path: str,
     destination_path: str,
     is_test: bool = False
@@ -120,17 +120,16 @@ def archive_file(
         filename = os.path.basename(file_path)
         compressed_filename = "compressed-" + filename
         destination_file_path = os.path.join(destination_path, compressed_filename)
-        compressed_file = compress_file(file_path)
+        compressed_file = await compress_file(file_path)
         if not os.path.exists(destination_path):
             os.makedirs(destination_path)
         with open(destination_file_path, "wb") as file:
             file.write(compressed_file)
             logger.debug("context manager closed.")
-        # if its a test then just rm the created dir/files & return True to indicate its working
+        # if its a test then just rm the created files & return True to indicate its working
         if is_test:
             logger.debug("test detected, destination file path.")
             os.remove(destination_file_path)
-            os.removedirs(destination_path)
             return True
         else:
             logger.debug("removing source file.")
@@ -139,7 +138,7 @@ def archive_file(
         logger.exception("Exception in archive_file: %e", e)
 
 
-def unarchive_file(
+async def unarchive_file(
     file_path: str,
     destination_path: str,
     is_test: bool = False
@@ -156,7 +155,7 @@ def unarchive_file(
         filename = os.path.basename(file_path)
         decompressed_filename = filename.replace("compressed-", "")
         destination_file_path = os.path.join(destination_path, decompressed_filename)
-        decompressed_file = decompress_file(file_path)
+        decompressed_file = await decompress_file(file_path)
         if not os.path.exists(destination_path):
             os.makedirs(destination_path)
         with open(destination_file_path, "wb") as file:
@@ -165,7 +164,6 @@ def unarchive_file(
         if is_test:
             logger.debug("test detected, removing destination file path")
             os.remove(destination_file_path)
-            os.removedirs(destination_path)
             return True
         else:
             logger.debug("removing source file.")

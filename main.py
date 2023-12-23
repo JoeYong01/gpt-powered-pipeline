@@ -1,4 +1,5 @@
 """main script"""
+import asyncio
 import logging
 import os
 from datetime import datetime
@@ -32,11 +33,8 @@ AZ_BLOB_STORAGE_CONN_STR = os.environ.get("AZURE_STORAGE_ACCOUNT_CONNECTION_STRI
 AZ_CONTAINER = "containerprojectjoe"
 
 # others
-CALL_LOGS_DIR = "call_logs/"
-CALL_LOGS_FILE = "Customer Service Sample Call - Product Refund.mp4"
-CALL_LOGS_FILEPATH = f"{CALL_LOGS_DIR}/{CALL_LOGS_FILE}"
+CALL_LOGS_DIR = ".call_logs_test/"
 ARCHIVE_DIR = "call_logs_archive/"
-ARCHIVE_FILEPATH = f"{ARCHIVE_DIR}/{CALL_LOGS_FILE}"
 
 # logging variables
 LOG_DIR = "logs"
@@ -56,7 +54,7 @@ logging.basicConfig(
 )
 
 
-def main():
+async def main():
     """
     transcribes audio files to text, from that, a few features columns for analysis are parsed: 
     (is_resolved/gift_given/customer_upset).
@@ -64,44 +62,40 @@ def main():
     archived/uploaded to blob storage
     """
     logger.info("running main().")
-    transcription = transcribe_audio(
-		client,
-  		TRANSCRIPTION_MODEL,
-		CALL_LOGS_FILEPATH
-	)
-    is_resolved = call_completions(
-        client,
-		COMPLETIONS_MODEL,
-		IS_ISSUE_RESOLVED_PROMPT,
-		0,
-		transcription
-	)
-    # is_upset = call_completions(
-    #     client,
-	# 	COMPLETIONS_MODEL,
-	# 	UPSET_CUSTOMER_PROMPT,
-	# 	transcription,
-	# 	0
-	# )
-    is_gift_given = call_completions(
-        client,
-		COMPLETIONS_MODEL,
-		OFFERING_PROMPT,
-		0,
-		transcription
-	)
-    time_processed = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    insert_into_database(
-		respondant_id = 1,
-		agent_id = 1,
-		is_resolved = is_resolved,
-		feature_columns = is_gift_given,
-		call_logs = transcription,
-		timestamp = time_processed
-	)
-    archive_file(CALL_LOGS_FILEPATH, ARCHIVE_DIR)
-    # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
-    logger.debug("finished running main().")
+    for audio_files in os.listdir(CALL_LOGS_DIR):
+        audio_filepath = os.path.join(CALL_LOGS_DIR, audio_files)
+        transcription = await transcribe_audio(
+            client,
+            TRANSCRIPTION_MODEL,
+            audio_filepath
+        )
+        is_resolved, is_gift_given = await asyncio.gather(
+            call_completions(
+                client,
+                COMPLETIONS_MODEL,
+                IS_ISSUE_RESOLVED_PROMPT,
+                0,
+                transcription
+            ),
+            call_completions(
+                client,
+                COMPLETIONS_MODEL,
+                OFFERING_PROMPT,
+                0,
+                transcription
+            )
+        )
+        await insert_into_database(
+            respondant_id = 1,
+            agent_id = 1,
+            is_resolved = is_resolved,
+            feature_columns = is_gift_given,
+            call_logs = transcription,
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
+        await archive_file(audio_filepath, ARCHIVE_DIR, is_test=True)
+        # upload_to_blob_storage(AZ_CONTAINER, AZ_BLOB_STORAGE_CONN_STR, CALL_LOGS_FILEPATH)
+        logger.debug("finished running main().")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
