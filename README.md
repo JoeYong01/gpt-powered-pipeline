@@ -34,8 +34,8 @@ After file processing, the file is compressed & archived locally & or compressed
 As Threading is superior in performance compared to asyncio in this use-case, the main branch will focus development on threading
 
 # Todo
-- Productionize the script:
-    - calculate processed token count against limit
+- Handle rate limits
+- Implement decorators for misc purposes (timing/retries)
 
 # Done
 - Processed files should be deleted/archived (& compressed)
